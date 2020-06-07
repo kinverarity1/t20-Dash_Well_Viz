@@ -82,7 +82,10 @@ def make_composite_log(df, lines=(), lines_func=make_scatter, log_tracks=()):
             the second track, you would use: ``lines=[["GAMM"], ["NEUT", "RHO"]]``.
         lines_func (function): function which takes a pandas.Series and
             returns a plotly graph object e.g. ``go.Scatter``.
-        log_tracks (list): list of tracks to set as log scale
+        log_tracks (list): list of tracks to set as log scale (zero-indexed,
+            i.e. ``log_tracks=[0]`` would apply to left-most track; also
+            allows negative indices so that ``log_tracks=[-1]`` would apply
+            to the right-most track).
 
     Returns: ``WellLog`` object with a plotly ``Figure`` as the ``fig``
         attribute.
@@ -101,6 +104,8 @@ def make_composite_log(df, lines=(), lines_func=make_scatter, log_tracks=()):
     log.fig.update_yaxes(range=(max(data_range.index), min(data_range.index)))
 
     for track_no in log_tracks:
+        if track_no < 0:
+            track_no = n_tracks + track_no
         if track_no == 0:
             log.fig.update_layout(xaxis_type="log")
         else:
